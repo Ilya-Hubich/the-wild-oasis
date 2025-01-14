@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import styled from "styled-components";
 import {
   addDays,
@@ -15,7 +15,9 @@ import Checkbox from "../../ui/Checkbox";
 import Textarea from "../../ui/Textarea";
 import Select from "../../ui/Select";
 import { formatCurrency } from "../../utils/helpers";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Autocomplete from "../../ui/Autocomplete";
+import { useGuests } from "../guests/useGuests";
 
 const Box = styled.div`
   /* Box */
@@ -90,10 +92,17 @@ function BookingForm({
         endDate: format(addDays(new Date(), 1), "yyyy-MM-dd"),
       };
 
-  const { register, formState, handleSubmit, watch, setValue, getValues } =
-    useForm({
-      defaultValues,
-    });
+  const {
+    register,
+    formState,
+    handleSubmit,
+    watch,
+    setValue,
+    getValues,
+    control,
+  } = useForm({
+    defaultValues,
+  });
 
   const { errors } = formState;
 
@@ -140,10 +149,10 @@ function BookingForm({
     }
   }, [
     isEdit,
-    booking.totalPrice,
-    booking.isPaid,
-    newBooking.totalPrice,
-    newBooking.isPaid,
+    booking?.totalPrice,
+    booking?.isPaid,
+    newBooking?.totalPrice,
+    newBooking?.isPaid,
     setValue,
   ]);
 
@@ -151,16 +160,46 @@ function BookingForm({
     onSubmit(calcNewBookingFields(data, cabin, settings));
   }
 
+  const [guestQuery, setGuestQuery] = useState("");
+
+  function handleGuestChange(val) {
+    console.log("BookingForm: handleGuestChange");
+    if (val.length < 4) return;
+    setGuestQuery(val);
+  }
+
+  const { guests, isLoadingGuests } = useGuests({
+    filter: {
+      method: "ilike",
+      field: "fullName",
+      value: `%${guestQuery}%`,
+    },
+  });
+
   return (
     <Form onSubmit={handleSubmit(innerOnSubmit)}>
-      <FormRow label="Guest Id" error={errors?.guestId?.message}>
-        <Input
-          type="number"
-          id="guestId"
-          disabled={isLoading}
-          {...register("guestId", {
-            required: "This field is required",
-          })}
+      <FormRow label="Guest" error={errors?.guestId?.message}>
+        <Controller
+          control={control}
+          name="guestId"
+          render={({ field: { onChange, onBlur, ref } }) => (
+            <Autocomplete
+              isLoading={isLoadingGuests}
+              onBlur={onBlur}
+              results={
+                !isLoadingGuests
+                  ? guests.map((guest) => ({
+                      value: guest.id,
+                      label: guest.fullName,
+                    }))
+                  : []
+              }
+              onChange={handleGuestChange}
+              onSelect={(e) => onChange(e.value)}
+              inputRef={ref}
+              defaultValue={booking?.guests.fullName}
+            />
+          )}
         />
       </FormRow>
 
