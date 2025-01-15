@@ -7,17 +7,17 @@ import {
   isBefore,
   isSameDay,
 } from "date-fns";
-import Form from "../../ui/Form";
-import FormRow from "../../ui/FormRow";
-import Input from "../../ui/Input";
-import Button from "../../ui/Button";
-import Checkbox from "../../ui/Checkbox";
-import Textarea from "../../ui/Textarea";
-import Select from "../../ui/Select";
-import { formatCurrency } from "../../utils/helpers";
+import Form from "../../../ui/Form";
+import FormRow from "../../../ui/FormRow";
+import Input from "../../../ui/Input";
+import Button from "../../../ui/Button";
+import Checkbox from "../../../ui/Checkbox";
+import Textarea from "../../../ui/Textarea";
+import Select from "../../../ui/Select";
+import { formatCurrency } from "../../../utils/helpers";
 import { useEffect } from "react";
-import Autocomplete from "../../ui/Autocomplete";
-import { useGuestsAutocomplete } from "./bookingForm/useGuestsAutocomplete";
+import Autocomplete from "../../../ui/Autocomplete";
+import { useGuestsAutocomplete } from "./useGuestsAutocomplete";
 
 const Box = styled.div`
   /* Box */

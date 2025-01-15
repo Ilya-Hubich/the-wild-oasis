@@ -1,4 +1,4 @@
-import BookingForm from "./BookingForm";
+import BookingForm from "./bookingForm/BookingForm";
 import { useCreateBooking } from "./useCreateBooking";
 import { useCabins } from "../cabins/useCabins";
 import { useSettings } from "../settings/useSettings";

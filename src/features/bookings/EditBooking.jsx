@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useCabins } from "../cabins/useCabins";
 import { useSettings } from "../settings/useSettings";
 import Spinner from "../../ui/Spinner";
-import BookingForm from "./BookingForm";
+import BookingForm from "./bookingForm/BookingForm";
 import { useUpdateBooking } from "./useUpdateBooking";
 import { useBooking } from "./useBooking";
 
