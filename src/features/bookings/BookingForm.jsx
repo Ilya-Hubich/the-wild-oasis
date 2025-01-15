@@ -15,9 +15,9 @@ import Checkbox from "../../ui/Checkbox";
 import Textarea from "../../ui/Textarea";
 import Select from "../../ui/Select";
 import { formatCurrency } from "../../utils/helpers";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Autocomplete from "../../ui/Autocomplete";
-import { useGuests } from "../guests/useGuests";
+import { useGuestsAutocomplete } from "./bookingForm/useGuestsAutocomplete";
 
 const Box = styled.div`
   /* Box */
@@ -159,20 +159,7 @@ function BookingForm({
     onSubmit(calcNewBookingFields(data, cabin, settings));
   }
 
-  const [guestQuery, setGuestQuery] = useState("");
-
-  function handleGuestChange(val) {
-    if (val.length < 4) return;
-    setGuestQuery(val);
-  }
-
-  const { guests, isLoadingGuests } = useGuests({
-    filter: {
-      method: "ilike",
-      field: "fullName",
-      value: `%${guestQuery}%`,
-    },
-  });
+  const { guests, isLoadingGuests, setGuestQuery } = useGuestsAutocomplete("");
 
   return (
     <Form onSubmit={handleSubmit(innerOnSubmit)}>
@@ -184,15 +171,11 @@ function BookingForm({
             <Autocomplete
               isLoading={isLoadingGuests}
               onBlur={onBlur}
-              results={
-                !isLoadingGuests
-                  ? guests.map((guest) => ({
-                      value: guest.id,
-                      label: guest.fullName,
-                    }))
-                  : []
-              }
-              onChange={handleGuestChange}
+              results={guests?.map((guest) => ({
+                value: guest.id,
+                label: guest.fullName,
+              }))}
+              onChange={setGuestQuery}
               onSelect={(e) => onChange(e.value)}
               inputRef={ref}
               defaultValue={booking?.guests.fullName}

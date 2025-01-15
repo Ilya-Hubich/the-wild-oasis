@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import Input from "./Input";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { useDebouncedValue } from "../hooks/useDebouncedValue";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 const StyledAutocomplete = styled.div`
   display: inline-block;
@@ -41,52 +43,42 @@ function Autocomplete({
   onSelect,
   inputRef,
   defaultValue = "",
+  debounce = 500,
+  minQueryLength = 3,
 }) {
   const [query, setQuery] = useState(defaultValue);
+  const debouncedQuery = useDebouncedValue(query, debounce);
+  const [isSelected, setIsSelected] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const containerRef = useRef();
+  const { ref: containerRef } = useClickOutside(() => setShowResults(false));
 
   function handleInputChange(e) {
     const val = e.target.value;
     setQuery(val);
-
-    if (val.length < 4) {
-      setShowResults(false);
-      return;
-    }
-
-    setShowResults(true);
+    setIsSelected(false);
   }
-
-  useEffect(() => {
-    const timerId = setTimeout(() => {
-      onChange?.(query);
-    }, 500);
-
-    return () => clearTimeout(timerId);
-  }, [query, onChange]);
 
   function handleItemSelection(item) {
     setQuery(item.label);
+    setIsSelected(true);
     setShowResults(false);
     onSelect?.(item);
   }
 
   useEffect(() => {
-    function handleOutsideClick(e) {
-      if (containerRef.current && containerRef.current.contains(e.target)) {
-        return;
-      }
-
-      setShowResults(false);
+    if (isSelected) {
+      return;
     }
 
-    document.addEventListener("click", handleOutsideClick);
+    if (debouncedQuery.length < minQueryLength) {
+      setShowResults(false);
+      return;
+    }
 
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
-  }, []);
+    setShowResults(true);
+
+    onChange?.(debouncedQuery);
+  }, [debouncedQuery, onChange, isSelected, minQueryLength]);
 
   return (
     <StyledAutocomplete ref={containerRef}>
@@ -100,7 +92,8 @@ function Autocomplete({
       />
       {showResults && (
         <Results>
-          {results.length > 0 &&
+          {!isLoading &&
+            results.length > 0 &&
             results.map((item) => (
               <ResultItem
                 key={item.value}
