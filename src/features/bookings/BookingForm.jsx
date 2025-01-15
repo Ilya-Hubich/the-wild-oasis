@@ -76,16 +76,18 @@ function BookingForm({
         cabinId: booking.cabinId,
         numGuests: booking.numGuests,
         numNights: booking.numNights,
+        hasBreakfast: booking.hasBreakfast,
         observations: booking.observations,
         isPaid: booking.isPaid,
         startDate: format(new Date(booking.startDate), "yyyy-MM-dd"),
-        endDate: format(addDays(new Date(booking.endDate), 1), "yyyy-MM-dd"),
+        endDate: format(new Date(booking.endDate), "yyyy-MM-dd"),
       }
     : {
         guestId: "",
         cabinId: cabins[0].id,
         numGuests: 1,
         numNights: 1,
+        hasBreakfast: false,
         observations: "",
         isPaid: false,
         startDate: format(new Date(), "yyyy-MM-dd"),
@@ -106,7 +108,14 @@ function BookingForm({
 
   const { errors } = formState;
 
-  watch(["cabinId", "numGuests", "startDate", "endDate", "hasBreakfast"]);
+  watch([
+    "cabinId",
+    "numGuests",
+    "startDate",
+    "endDate",
+    "hasBreakfast",
+    "isPaid",
+  ]);
   const formData = getValues();
   const cabin = cabins.find((cabin) => cabin.id === Number(formData.cabinId));
   const newBooking = calcNewBookingFields(formData, cabin, settings);
@@ -136,23 +145,13 @@ function BookingForm({
 
   useEffect(() => {
     if (isEdit && booking.isPaid) {
-      if (
-        booking.totalPrice >= newBooking.totalPrice &&
-        newBooking.isPaid === false
-      )
-        setValue("isPaid", true);
-      if (
-        booking.totalPrice < newBooking.totalPrice &&
-        newBooking.isPaid === true
-      )
-        setValue("isPaid", false);
+      setValue("isPaid", booking.totalPrice === newBooking.totalPrice);
     }
   }, [
     isEdit,
     booking?.totalPrice,
     booking?.isPaid,
     newBooking?.totalPrice,
-    newBooking?.isPaid,
     setValue,
   ]);
 
@@ -163,7 +162,6 @@ function BookingForm({
   const [guestQuery, setGuestQuery] = useState("");
 
   function handleGuestChange(val) {
-    console.log("BookingForm: handleGuestChange");
     if (val.length < 4) return;
     setGuestQuery(val);
   }
@@ -309,7 +307,23 @@ function BookingForm({
 
       {isEdit && newBooking?.cabinId && (
         <Box>
-          <Checkbox id="isPaid" {...register("isPaid")}>
+          <Checkbox
+            id="isPaid"
+            {...register("isPaid", {
+              required: "Required",
+            })}
+            disabled={newBooking.totalPrice === booking.totalPrice}
+          >
+            {newBooking.totalPrice === booking.totalPrice &&
+              `I confirm that the guest has paid the total amount of ${
+                !newBooking.hasBreakfast
+                  ? formatCurrency(newBooking.totalPrice)
+                  : `${formatCurrency(newBooking.totalPrice)}(${formatCurrency(
+                      newBooking.cabinPrice
+                    )} +
+                  ${formatCurrency(newBooking.extrasPrice)}) `
+              }`}
+
             {newBooking.totalPrice > booking.totalPrice &&
               `I confirm that the guest has paid the additional amount of ${formatCurrency(
                 newBooking.totalPrice - booking.totalPrice
@@ -333,7 +347,11 @@ function BookingForm({
         <Button variant="secondary" onClick={onCancel}>
           Cancel
         </Button>
-        <Button disabled={isLoading}>
+        <Button
+          disabled={
+            isLoading || (isEdit && booking.isPaid && !newBooking.isPaid)
+          }
+        >
           {isEdit ? "Edit Booking" : "Create new booking"}
         </Button>
       </FormRow>
