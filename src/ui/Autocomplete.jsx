@@ -45,10 +45,11 @@ function Autocomplete({
   defaultValue = "",
   debounce = 500,
   minQueryLength = 3,
+  disabled,
 }) {
   const [query, setQuery] = useState(defaultValue);
   const debouncedQuery = useDebouncedValue(query, debounce);
-  const [isSelected, setIsSelected] = useState(false);
+  const [isSelected, setIsSelected] = useState(true);
   const [showResults, setShowResults] = useState(false);
   const { ref: containerRef } = useClickOutside(() => setShowResults(false));
 
@@ -89,6 +90,7 @@ function Autocomplete({
         onBlur={onBlur}
         ref={inputRef}
         placeholder="Type to search..."
+        disabled={disabled}
       />
       {showResults && (
         <Results>

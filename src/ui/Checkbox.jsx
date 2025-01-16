@@ -28,7 +28,16 @@ const StyledCheckbox = styled.div`
 
 const Checkbox = React.forwardRef(
   (
-    { checked, onChange, onBlur, name, disabled = false, id, children },
+    {
+      checked,
+      onChange,
+      onBlur,
+      name,
+      disabled = false,
+      id,
+      children,
+      ...props
+    },
     ref
   ) => {
     return (
@@ -42,6 +51,7 @@ const Checkbox = React.forwardRef(
           onBlur={onBlur}
           ref={ref}
           disabled={disabled}
+          {...props}
         />
         <label htmlFor={!disabled ? id : ""}>{children}</label>
       </StyledCheckbox>
