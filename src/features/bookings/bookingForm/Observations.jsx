@@ -1,12 +1,10 @@
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useFormState } from "react-hook-form";
 import FormRow from "../../../ui/FormRow";
 import Textarea from "../../../ui/Textarea";
 
 function Observations({ isLoading }) {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext();
+  const { register } = useFormContext();
+  const { errors } = useFormState();
 
   return (
     <FormRow label="Observations" error={errors?.observations?.message}>

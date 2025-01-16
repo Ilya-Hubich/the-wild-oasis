@@ -10,6 +10,7 @@ import NumGuests from "./NumGuests";
 import CabinsSelect from "./CabinsSelect";
 import Breakfast from "./Breakfast";
 import Observations from "./Observations";
+// import { DevTool } from "@hookform/devtools";
 
 function BookingForm({
   booking,
@@ -27,7 +28,7 @@ function BookingForm({
     defaultValues,
   });
 
-  const { handleSubmit } = form;
+  const { handleSubmit /*,control*/ } = form;
 
   function innerOnSubmit(data) {
     const cabin = cabins.find((cabin) => cabin.id === Number(data.cabinId));
@@ -70,6 +71,8 @@ function BookingForm({
           </Button>
         </FormRow>
       </Form>
+
+      {/* <DevTool control={control} /> */}
     </FormProvider>
   );
 }

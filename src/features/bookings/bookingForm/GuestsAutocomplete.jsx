@@ -1,11 +1,11 @@
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext, useFormState } from "react-hook-form";
 import FormRow from "../../../ui/FormRow";
 import { useGuestsAutocomplete } from "./useGuestsAutocomplete";
 import Autocomplete from "../../../ui/Autocomplete";
 
 function GuestsAutocomplete({ defaultValue, isLoading }) {
-  const { formState, control } = useFormContext();
-  const { errors } = formState;
+  const { control } = useFormContext();
+  const { errors } = useFormState();
 
   const { guests, isLoadingGuests, setGuestQuery } = useGuestsAutocomplete("");
 

@@ -1,4 +1,4 @@
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useFormState, useWatch } from "react-hook-form";
 import { formatCurrency } from "../../../utils/helpers";
 import styled from "styled-components";
 import Checkbox from "../../../ui/Checkbox";
@@ -20,13 +20,15 @@ const ErrorContainer = styled.div`
 `;
 
 function PaymentConfirmation({ isEdit, booking, cabins, settings }) {
-  const { getValues, register, setValue, watch, formState } = useFormContext();
+  const { getValues, register, setValue } = useFormContext();
+  const { errors } = useFormState();
   const formData = getValues();
-  const { errors } = formState;
   const cabin = cabins.find((cabin) => cabin.id === Number(formData.cabinId));
   const newBooking = calcNewBookingFields(formData, cabin, settings);
 
-  watch(["cabinId", "numGuests", "startDate", "endDate", "hasBreakfast"]);
+  useWatch({
+    name: ["cabinId", "numGuests", "startDate", "endDate", "hasBreakfast"],
+  });
 
   useEffect(() => {
     if (isEdit && booking.isPaid) {
@@ -62,6 +64,7 @@ function PaymentConfirmation({ isEdit, booking, cabins, settings }) {
             id="isPaid"
             {...register("isPaid", {
               required: "This field is required",
+              disabled: booking.totalPrice === newBooking.totalPrice,
             })}
           >
             {newBooking.totalPrice === booking.totalPrice &&
