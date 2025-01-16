@@ -77,7 +77,6 @@ function Autocomplete({
     }
 
     setShowResults(true);
-
     onChange?.(debouncedQuery);
   }, [debouncedQuery, onChange, isSelected, minQueryLength]);
 

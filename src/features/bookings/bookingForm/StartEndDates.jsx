@@ -1,4 +1,4 @@
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useFormState, useWatch } from "react-hook-form";
 import FormRow from "../../../ui/FormRow";
 import Input from "../../../ui/Input";
 import {
@@ -15,10 +15,12 @@ function isBeforeOrSameDay(date1, date2) {
 }
 
 function StartEndDates({ isLoading, settings }) {
-  const { formState, register, getValues, setValue, watch } = useFormContext();
-  const { errors } = formState;
+  const { register, getValues, setValue } = useFormContext();
+  const { errors } = useFormState();
 
-  const [startDate, endDate] = watch(["startDate", "endDate"]);
+  const [startDate, endDate] = useWatch({
+    name: ["startDate", "endDate"],
+  });
 
   const minStartDate = format(new Date(), "yyyy-MM-dd");
   const minEndDate = format(

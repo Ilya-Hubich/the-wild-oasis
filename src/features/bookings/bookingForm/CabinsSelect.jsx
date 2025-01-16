@@ -1,10 +1,10 @@
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useFormState } from "react-hook-form";
 import FormRow from "../../../ui/FormRow";
 import Select from "../../../ui/Select";
 
 function CabinsSelect({ isLoading, cabins }) {
-  const { formState, register } = useFormContext();
-  const { errors } = formState;
+  const { register } = useFormContext();
+  const { errors } = useFormState();
 
   return (
     <FormRow label="Cabin" error={errors?.cabinId?.message}>
