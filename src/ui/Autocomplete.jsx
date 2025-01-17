@@ -42,16 +42,27 @@ function Autocomplete({
   onBlur,
   onSelect,
   inputRef,
-  defaultValue = "",
+  defaultValue,
   debounce = 500,
   minQueryLength = 3,
   disabled,
+  renderResults,
+  getLabel = (item) => item,
 }) {
-  const [query, setQuery] = useState(defaultValue);
+  const [query, setQuery] = useState(
+    defaultValue ? getLabel(defaultValue) : ""
+  );
   const debouncedQuery = useDebouncedValue(query, debounce);
-  const [isSelected, setIsSelected] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(defaultValue || null);
+  const [isSelected, setIsSelected] = useState(!!defaultValue);
   const [showResults, setShowResults] = useState(false);
-  const { ref: containerRef } = useClickOutside(() => setShowResults(false));
+  const { ref: containerRef } = useClickOutside(() => {
+    setShowResults(false);
+
+    if (selectedOption) {
+      setQuery(getLabel(selectedOption));
+    }
+  });
 
   function handleInputChange(e) {
     const val = e.target.value;
@@ -59,16 +70,26 @@ function Autocomplete({
     setIsSelected(false);
   }
 
-  function handleItemSelection(item) {
-    setQuery(item.label);
+  function handleOptionSelection(option) {
     setIsSelected(true);
+    setQuery(getLabel(option));
+    setSelectedOption(option);
     setShowResults(false);
-    onSelect?.(item);
+    onSelect?.(option);
   }
 
   useEffect(() => {
     if (isSelected) {
       return;
+    }
+
+    if (selectedOption && debouncedQuery === getLabel(selectedOption)) {
+      return;
+    }
+
+    if (debouncedQuery.length === 0) {
+      setSelectedOption(null);
+      onSelect?.();
     }
 
     if (debouncedQuery.length < minQueryLength) {
@@ -78,7 +99,15 @@ function Autocomplete({
 
     setShowResults(true);
     onChange?.(debouncedQuery);
-  }, [debouncedQuery, onChange, isSelected, minQueryLength]);
+  }, [
+    debouncedQuery,
+    onChange,
+    selectedOption,
+    minQueryLength,
+    isSelected,
+    onSelect,
+    getLabel,
+  ]);
 
   return (
     <StyledAutocomplete ref={containerRef}>
@@ -97,10 +126,10 @@ function Autocomplete({
             results.length > 0 &&
             results.map((item) => (
               <ResultItem
-                key={item.value}
-                onClick={() => handleItemSelection(item)}
+                key={getLabel(item)}
+                onClick={() => handleOptionSelection(item)}
               >
-                {item.label}
+                {renderResults ? renderResults(item) : getLabel(item)}
               </ResultItem>
             ))}
 
