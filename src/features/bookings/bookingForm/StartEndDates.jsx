@@ -14,7 +14,7 @@ function isBeforeOrSameDay(date1, date2) {
   return isBefore(date1, date2) || isSameDay(date1, date2);
 }
 
-function StartEndDates({ isLoading, settings }) {
+function StartEndDates({ settings }) {
   const { register, getValues, setValue } = useFormContext();
   const { errors } = useFormState();
 
@@ -43,7 +43,6 @@ function StartEndDates({ isLoading, settings }) {
         <Input
           type="date"
           id="startDate"
-          disabled={isLoading}
           min={minStartDate}
           {...register("startDate", {
             required: "This field is required",
@@ -55,7 +54,6 @@ function StartEndDates({ isLoading, settings }) {
         <Input
           type="date"
           id="endDate"
-          disabled={isLoading}
           min={minEndDate}
           {...register("endDate", {
             required: "This field is required",

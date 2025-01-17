@@ -22,7 +22,7 @@ function GuestsAutocomplete({ defaultValue, isLoading }) {
       <Controller
         control={control}
         name="guestId"
-        render={({ field: { onChange, onBlur, ref } }) => (
+        render={({ field: { onChange, onBlur, ref, disabled } }) => (
           <Autocomplete
             isLoading={isLoadingGuests}
             onBlur={onBlur}
@@ -41,7 +41,7 @@ function GuestsAutocomplete({ defaultValue, isLoading }) {
             onSelect={(guest) => onChange(guest?.id)}
             inputRef={ref}
             defaultValue={defaultValue}
-            disabled={isLoading}
+            disabled={disabled}
           />
         )}
         rules={{ required: "This field is required" }}

@@ -2,7 +2,7 @@ import { useFormContext, useWatch, useFormState } from "react-hook-form";
 import FormRow from "../../../ui/FormRow";
 import Input from "../../../ui/Input";
 
-function NumGuests({ isLoading, cabins }) {
+function NumGuests({ cabins }) {
   const { register } = useFormContext();
   const { errors } = useFormState();
   const cabinId = useWatch({ name: "cabinId" });
@@ -13,7 +13,6 @@ function NumGuests({ isLoading, cabins }) {
       <Input
         type="number"
         id="numGuests"
-        disabled={isLoading}
         {...register("numGuests", {
           required: "This field is required",
           valueAsNumber: true,

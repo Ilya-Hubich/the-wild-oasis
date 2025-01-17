@@ -2,7 +2,7 @@ import { useFormContext, useFormState } from "react-hook-form";
 import FormRow from "../../../ui/FormRow";
 import Textarea from "../../../ui/Textarea";
 
-function Observations({ isLoading }) {
+function Observations() {
   const { register } = useFormContext();
   const { errors } = useFormState();
 
@@ -10,7 +10,6 @@ function Observations({ isLoading }) {
     <FormRow label="Observations" error={errors?.observations?.message}>
       <Textarea
         id="observations"
-        disabled={isLoading}
         {...register("observations", {
           maxLength: {
             value: 1000,

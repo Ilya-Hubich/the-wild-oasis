@@ -10,6 +10,7 @@ import NumGuests from "./NumGuests";
 import CabinsSelect from "./CabinsSelect";
 import Breakfast from "./Breakfast";
 import Observations from "./Observations";
+import { useEffect, useState } from "react";
 // import { DevTool } from "@hookform/devtools";
 
 function BookingForm({
@@ -24,8 +25,11 @@ function BookingForm({
 
   const defaultValues = getDefaultValues(isEdit, booking, cabins);
 
+  const [disabled, setDisabled] = useState(false);
+
   const form = useForm({
     defaultValues,
+    disabled,
   });
 
   const { handleSubmit /*,control*/ } = form;
@@ -35,23 +39,22 @@ function BookingForm({
     onSubmit(calcNewBookingFields(data, cabin, settings));
   }
 
+  useEffect(() => setDisabled(isLoading), [isLoading]);
+
   return (
     <FormProvider {...form}>
       <Form onSubmit={handleSubmit(innerOnSubmit)} noValidate>
-        <GuestsAutocomplete
-          defaultValue={booking?.guests.fullName}
-          disabled={isLoading}
-        />
+        <GuestsAutocomplete defaultValue={booking?.guests} />
 
-        <CabinsSelect isLoading={isLoading} cabins={cabins} />
+        <CabinsSelect cabins={cabins} />
 
-        <NumGuests isLoading={isLoading} cabins={cabins} />
+        <NumGuests cabins={cabins} />
 
-        <StartEndDates settings={settings} isLoading={isLoading} />
+        <StartEndDates settings={settings} />
 
-        <Breakfast isLoading={isLoading} />
+        <Breakfast />
 
-        <Observations isLoading={isLoading} />
+        <Observations />
 
         <PaymentConfirmation
           isEdit={isEdit}
